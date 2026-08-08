@@ -1,1 +1,9 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.logictubepro.puzzle",
+        "sha256_cert_fingerprints": ["40:35:36:56:6E:39:1A:67:91:25:9D:F8:25:26:97:55:39:C5:1A:27:98:F5:90:03:E1:5F:B1:C9:02:E1:0A:0B"]
+      }
+    }]
 
