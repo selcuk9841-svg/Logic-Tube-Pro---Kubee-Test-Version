@@ -250,7 +250,10 @@ function addExtraTube(){
  layoutTubes();
 }
 function handleTap(cx,cy){
- if(G.phase!=='playing')return;Audio.resume();
+ if(G.phase!=='playing')return;
+ if(Audio.ctx&&Audio.ctx.state==='suspended')Audio.ctx.resume();
+ if(!Audio.ctx){Audio.init();Audio.startBgm();}
+ Audio.resume();
  const idx=G.tubes.findIndex(tb=>{const lift=G.selected===tb.idx?-10:0;return cx>=tb.x&&cx<=tb.x+tb.w&&cy>=tb.y+lift&&cy<=tb.y+tb.h+lift;});
  if(idx===-1){G.selected=null;return;}
  const tb=G.tubes[idx];
@@ -286,6 +289,9 @@ function init(){
  Audio.startBgm();
  showSplash();
 }
+document.addEventListener('pointerdown',function(){
+ if(Audio.ctx&&Audio.ctx.state==='suspended')Audio.ctx.resume();
+},{ once:false });
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
