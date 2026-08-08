@@ -158,10 +158,21 @@ function canMove(from,to){if(from.blocks.length===0||to.blocks.length>=BALLS)ret
 function hasAnyMove(tubes){for(let i=0;i<tubes.length;i++)for(let j=0;j<tubes.length;j++)if(i!==j&&canMove(tubes[i],tubes[j]))return true;return false;}
 function layoutTubes(){
  const n=G.tubes.length,bot=G.safeBottom+16,avH=G.H-G.tubeY-bot;
- const tw=Math.round(Math.min(64,Math.max(44,(G.W-16)/n-8)));
- const th=Math.round(Math.min(avH*0.96,tw*5.5));
- const total=n*tw+(n-1)*8,ox=Math.round((G.W-total)/2);
- G.tubes.forEach((tb,i)=>{tb.w=tw;tb.h=th;tb.x=ox+i*(tw+8);tb.y=G.tubeY+Math.round((avH-th)/2);});
+ const rows=n>7?2:1;
+ const perRow=Math.ceil(n/rows);
+ const tw=Math.round(Math.min(64,Math.max(36,(G.W-16)/perRow-8)));
+ const rowH=rows===2?Math.round((avH-12)/2):avH;
+ const th=Math.round(Math.min(rowH*0.94,tw*4.8));
+ G.tubes.forEach((tb,i)=>{
+ const row=rows===2?Math.floor(i/perRow):0;
+ const col=rows===2?i%perRow:i;
+ const countInRow=rows===2&&row===1?n-perRow:perRow;
+ const total=countInRow*tw+(countInRow-1)*8;
+ const ox=Math.round((G.W-total)/2);
+ tb.w=tw;tb.h=th;
+ tb.x=ox+col*(tw+8);
+ tb.y=G.tubeY+row*(th+12)+Math.round((rowH-th)/2);
+ });
 }
 function rRect(c,x,y,w,h,r){
  const[tl,tr,br,bl]=typeof r==='number'?[r,r,r,r]:r;
