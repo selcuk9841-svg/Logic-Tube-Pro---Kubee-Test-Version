@@ -10,7 +10,7 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#07091a}
 body{position:fixed;inset:0;touch-action:none;font-family:"Segoe UI",system-ui,sans-serif}
 #cv{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;touch-action:none;display:block}
-#hud{position:fixed;top:0;left:0;width:100%;z-index:10;pointer-events:none;display:none}
+#hud{position:fixed;top:0;left:0;width:100%;z-index:10;pointer-events:auto;display:none}
 #ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto}
 .btn{border:none;border-radius:26px;color:#fff;font-weight:800;cursor:pointer;padding:13px 28px;font-size:15px;min-height:48px;touch-action:manipulation;font-family:inherit;transition:transform 0.12s,box-shadow 0.12s;}
 .btn:active{transform:scale(0.95);}
@@ -399,9 +399,14 @@ function showGameOver(reason){
  document.getElementById('rv-share').onclick=()=>{if(navigator.share){navigator.share({title:'Logic Tube Pro',text:'Bu bulmacayı çözebilir misin? 🎮',url:location.href}).then(()=>{addExtraTube();G.reviveUsed=true;resumePlay();}).catch(()=>{addExtraTube();G.reviveUsed=true;resumePlay();});}else{try{navigator.clipboard.writeText(location.href);}catch{}flash('🔗 Link kopyalandı!');setTimeout(()=>{addExtraTube();G.reviveUsed=true;resumePlay();},800);}};
  }
 }
-
+function doPause(){
+ if(G.phase!=='playing')return;
+ G.phase='paused';stopTimer();
+ showOv('rgba(5,8,25,0.96)','<div style="text-align:center;padding:28px 20px;max-width:280px;width:90%;"><div style="font-size:26px;font-weight:900;color:#fff;margin-bottom:20px;">⏸ Oyun Duraklatıldı</div><button id="ps-cont" class="btn btn-primary" style="width:100%;margin-bottom:10px;font-size:15px;">▶ Devam Et</button><button id="ps-menu" class="btn btn-ghost" style="width:100%;font-size:13px;">🏠 Ana Menü</button></div>');
+ document.getElementById('ps-cont').onclick=()=>{G.phase='playing';hideOv();startTimer();};
+ document.getElementById('ps-menu').onclick=()=>{G.phase='splash';hideOv();showSplash();};
+}
 function resumePlay(){G.phase='playing';hideOv();document.getElementById('hud').style.display='block';startTimer();updateHUD();}
-
 function showLeaderboard(){
  const lb=getLB().slice(0,10),md=['🥇','🥈','🥉'];
  const rows=lb.length===0?'<div style="color:#223344;font-size:12px;padding:12px;">Henüz sıralama yok.</div>':lb.map((e,i)=>'<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,0.04);margin-bottom:4px;"><span style="font-size:15px;width:22px;text-align:center;">'+(md[i]||(i+1)+'.')+'</span><span style="flex:1;color:#cce;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+e.name+'</span><span style="color:#ffd700;font-size:12px;font-weight:700;">'+e.score.toLocaleString()+'</span><span style="color:#88aaff;font-size:10px;">Lv'+e.level+'</span></div>').join('');
