@@ -34,13 +34,34 @@ select{background:#0d1b3e}
 <script>
 'use strict';
 const BALLS=4,EMPTY=2,BASE_TIMER=40;
-const SAVE_KEY='ltp_v10',ADFREE_KEY='ltp_adfree',NAME_KEY='ltp_player',LB_KEY='ltp_lb',DAILY_KEY='ltp_daily',STREAK_KEY='ltp_streak';
+const SAVE_KEY='ltp_v11',ADFREE_KEY='ltp_adfree',NAME_KEY='ltp_player',LB_KEY='ltp_lb',DAILY_KEY='ltp_daily',STREAK_KEY='ltp_streak';
 const PALETTE=['#e63030','#1a7fe8','#22c55e','#f5c200','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16'];
-const DAILY_REWARDS=[50,75,100,125,150,200,300];
-const TR={sub:'Renkli topları tüplere sırala!',play:'▶ OYNA',next:'SONRAKİ SEVİYE ▶',retry:'↩ TEKRAR DENE',win:'🎉 SEVİYE TAMAM!',timesup:'⏰ Süre Doldu!',nomoves:'🔒 Hamle Kalmadı!',sprint:'ÇİTA YARIŞI',coins100:'🪙 100 Jeton → +40sn',watchad:'📺 Reklam İzle → +40sn',share:'🔗 Paylaş → Ücretsiz Tüp',stuck:'🔒 TIKANDIN',undo:'↩ Geri Al',lb:'🏆 Sıralama',stop:'⏸ Durdur',cont:'▶ Devam Et ({n}. Bölüm)',newgame:'🔄 1. Bölümden Başla',pname:'Oyuncu Adı',lang:'Dil',adfree:'🚫 Reklamları Kaldır',adprice:'₺89,99',adbought:'✅ Reklamsız Aktif',lvl:'Bölüm',ititle:'💼 Kısa Mola!',iskip:'Reklamı Geç → Devam',daily:'📅 Günlük Ödül',streak:'🔥 Seri',collect:'🎁 Topla!',noCoins:'Jeton yetersiz!'};
-const EN={sub:'Sort colored balls into tubes!',play:'▶ PLAY',next:'NEXT LEVEL ▶',retry:'↩ TRY AGAIN',win:'🎉 LEVEL COMPLETE!',timesup:"⏰ Time's Up!",nomoves:'🔒 No Moves Left!',sprint:'CHEETAH SPRINT',coins100:'🪙 100 Coins → +40s',watchad:'📺 Watch Ad → +40s',share:'🔗 Share → Free Tube',stuck:'🔒 STUCK',undo:'↩ Undo',lb:'🏆 Rank',stop:'⏸ Stop',cont:'▶ Continue (Level {n})',newgame:'🔄 Start from Level 1',pname:'Player Name',lang:'Language',adfree:'🚫 Remove Ads',adprice:'$2.99',adbought:'✅ Ad-Free Active',lvl:'Level',ititle:'💼 Quick Break!',iskip:'Skip Ad → Continue',daily:'📅 Daily Reward',streak:'🔥 Streak',collect:'🎁 Collect!',noCoins:'Not enough coins!'};
+const DAILY_REWARDS=[30,40,50,60,75,100,150];
+
+// Altın harcama fiyatları
+const COST_UNDO=100;
+const COST_HINT=150;
+const COST_TIME=200;
+const COST_TUBE=250;
+const COST_SKIP=400;
+
+const TR={sub:'Renkli topları tüplere sırala!',play:'▶ OYNA',next:'SONRAKİ SEVİYE ▶',retry:'↩ TEKRAR DENE',win:'🎉 SEVİYE TAMAM!',timesup:'⏰ Süre Doldu!',nomoves:'🔒 Hamle Kalmadı!',sprint:'ÇİTA YARIŞI',watchad:'📺 Reklam İzle → Ekstra Tüp',share:'🔗 Paylaş → Ücretsiz Tüp',stuck:'🔒 TIKANDIN',undo:'↩ Geri Al',hint:'💡 İpucu',lb:'🏆 Sıralama',stop:'⏸ Durdur',cont:'▶ Devam Et ({n}. Bölüm)',newgame:'🔄 1. Bölümden Başla',pname:'Oyuncu Adı',lang:'Dil',adfree:'🚫 Reklamları Kaldır',adprice:'₺89,99',adbought:'✅ Reklamsız Aktif',lvl:'Bölüm',ititle:'💼 Kısa Mola!',iskip:'Reklamı Geç → Devam',daily:'📅 Günlük Ödül',collect:'🎁 Topla!',noCoins:'Jeton yetersiz!',hintUsed:'💡 Vurgulanan tüpü seç!'};
+const EN={sub:'Sort colored balls into tubes!',play:'▶ PLAY',next:'NEXT LEVEL ▶',retry:'↩ TRY AGAIN',win:'🎉 LEVEL COMPLETE!',timesup:"⏰ Time's Up!",nomoves:'🔒 No Moves Left!',sprint:'CHEETAH SPRINT',watchad:'📺 Watch Ad → Extra Tube',share:'🔗 Share → Free Tube',stuck:'🔒 STUCK',undo:'↩ Undo',hint:'💡 Hint',lb:'🏆 Rank',stop:'⏸ Stop',cont:'▶ Continue (Level {n})',newgame:'🔄 Start from Level 1',pname:'Player Name',lang:'Language',adfree:'🚫 Remove Ads',adprice:'$2.99',adbought:'✅ Ad-Free Active',lvl:'Level',ititle:'💼 Quick Break!',iskip:'Skip Ad → Continue',daily:'📅 Daily Reward',collect:'🎁 Collect!',noCoins:'Not enough coins!',hintUsed:'💡 Select the highlighted tube!'};
 function mk(b,o){return Object.assign({},b,o);}
-const LANGS={tr:TR,en:EN,es:mk(EN,{sub:'¡Ordena las bolas!',play:'▶ JUGAR',next:'SIGUIENTE ▶',retry:'↩ REINTENTAR',win:'🎉 ¡NIVEL COMPLETO!',adfree:'🚫 Quitar Anuncios',adprice:'$2.99',adbought:'✅ Sin Anuncios'}),fr:mk(EN,{sub:'Triez les billes!',play:'▶ JOUER',next:'SUIVANT ▶',retry:'↩ RÉESSAYER',win:'🎉 NIVEAU COMPLÉTÉ!',adfree:'🚫 Supprimer les Pubs',adprice:'$2.99',adbought:'✅ Sans Pub'}),de:mk(EN,{sub:'Sortiere die Kugeln!',play:'▶ SPIELEN',next:'WEITER ▶',retry:'↩ NOCHMAL',win:'🎉 LEVEL GESCHAFFT!',adfree:'🚫 Werbung entfernen',adprice:'$2.99',adbought:'✅ Werbefrei'}),ar:mk(EN,{sub:'رتّب الكرات!',play:'▶ العب',next:'التالي ▶',retry:'↩ حاول',win:'🎉 اكتمل المستوى!',adfree:'🚫 إزالة الإعلانات',adprice:'$2.99',adbought:'✅ بدون إعلانات'}),zh:mk(EN,{sub:'将彩球分类！',play:'▶ 开始',next:'下一关 ▶',retry:'↩ 再来',win:'🎉 关卡完成！',adfree:'🚫 移除广告',adprice:'¥18',adbought:'✅ 无广告'}),ja:mk(EN,{sub:'ボールを並べよう！',play:'▶ プレイ',next:'次へ ▶',retry:'↩ やり直し',win:'🎉 クリア！',adfree:'🚫 広告を削除',adprice:'¥370',adbought:'✅ 広告なし'}),ko:mk(EN,{sub:'공을 정렬하세요!',play:'▶ 플레이',next:'다음 ▶',retry:'↩ 다시',win:'🎉 완료!',adfree:'🚫 광고 제거',adprice:'₩3,900',adbought:'✅ 광고 없음'}),hi:mk(EN,{sub:'गेंदें सॉर्ट करें!',play:'▶ खेलें',next:'अगला ▶',retry:'↩ पुनः',win:'🎉 पूर्ण!',adfree:'🚫 विज्ञापन हटाएं',adprice:'₹249',adbought:'✅ विज्ञापन-मुक्त'}),az:mk(EN,{sub:'Topları sırala!',play:'▶ OYNA',next:'NÖVBƏTİ ▶',retry:'↩ YENİDƏN',win:'🎉 TAMAMLANDI!',adfree:'🚫 Reklamları sil',adprice:'$2.99',adbought:'✅ Reklamdız'}),id:mk(EN,{sub:'Sortir bola berwarna!',play:'▶ MAIN',next:'SELANJUTNYA ▶',retry:'↩ COBA LAGI',win:'🎉 LEVEL SELESAI!',adfree:'🚫 Hapus Iklan',adprice:'Rp45.000',adbought:'✅ Tanpa Iklan'}),vi:mk(EN,{sub:'Sắp xếp các quả bóng!',play:'▶ CHƠI',next:'TIẾP THEO ▶',retry:'↩ THỬ LẠI',win:'🎉 HOÀN THÀNH!',adfree:'🚫 Xóa quảng cáo',adprice:'$2.99',adbought:'✅ Không quảng cáo'}),th:mk(EN,{sub:'จัดเรียงลูกบอลสี!',play:'▶ เล่น',next:'ถัดไป ▶',retry:'↩ ลองใหม่',win:'🎉 ผ่านด่าน!',adfree:'🚫 ลบโฆษณา',adprice:'$2.99',adbought:'✅ ไม่มีโฆษณา'})};
+const LANGS={tr:TR,en:EN,
+ es:mk(EN,{sub:'¡Ordena las bolas!',play:'▶ JUGAR',next:'SIGUIENTE ▶',retry:'↩ REINTENTAR',win:'🎉 ¡NIVEL COMPLETO!',adfree:'🚫 Quitar Anuncios',adprice:'$2.99',adbought:'✅ Sin Anuncios'}),
+ fr:mk(EN,{sub:'Triez les billes!',play:'▶ JOUER',next:'SUIVANT ▶',retry:'↩ RÉESSAYER',win:'🎉 NIVEAU COMPLÉTÉ!',adfree:'🚫 Supprimer les Pubs',adprice:'$2.99',adbought:'✅ Sans Pub'}),
+ de:mk(EN,{sub:'Sortiere die Kugeln!',play:'▶ SPIELEN',next:'WEITER ▶',retry:'↩ NOCHMAL',win:'🎉 LEVEL GESCHAFFT!',adfree:'🚫 Werbung entfernen',adprice:'$2.99',adbought:'✅ Werbefrei'}),
+ ar:mk(EN,{sub:'رتّب الكرات!',play:'▶ العب',next:'التالي ▶',retry:'↩ حاول',win:'🎉 اكتمل المستوى!',adfree:'🚫 إزالة الإعلانات',adprice:'$2.99',adbought:'✅ بدون إعلانات'}),
+ zh:mk(EN,{sub:'将彩球分类！',play:'▶ 开始',next:'下一关 ▶',retry:'↩ 再来',win:'🎉 关卡完成！',adfree:'🚫 移除广告',adprice:'¥18',adbought:'✅ 无广告'}),
+ ja:mk(EN,{sub:'ボールを並べよう！',play:'▶ プレイ',next:'次へ ▶',retry:'↩ やり直し',win:'🎉 クリア！',adfree:'🚫 広告を削除',adprice:'¥370',adbought:'✅ 広告なし'}),
+ ko:mk(EN,{sub:'공을 정렬하세요!',play:'▶ 플레이',next:'다음 ▶',retry:'↩ 다시',win:'🎉 완료!',adfree:'🚫 광고 제거',adprice:'₩3,900',adbought:'✅ 광고 없음'}),
+ hi:mk(EN,{sub:'गेंदें सॉर्ट करें!',play:'▶ खेलें',next:'अगला ▶',retry:'↩ पुनः',win:'🎉 पूर्ण!',adfree:'🚫 विज्ञापन हटाएं',adprice:'₹249',adbought:'✅ विज्ञापन-मुक्त'}),
+ az:mk(EN,{sub:'Topları sırala!',play:'▶ OYNA',next:'NÖVBƏTİ ▶',retry:'↩ YENİDƏN',win:'🎉 TAMAMLANDI!',adfree:'🚫 Reklamları sil',adprice:'$2.99',adbought:'✅ Reklamdız'}),
+ id:mk(EN,{sub:'Sortir bola berwarna!',play:'▶ MAIN',next:'SELANJUTNYA ▶',retry:'↩ COBA LAGI',win:'🎉 LEVEL SELESAI!',adfree:'🚫 Hapus Iklan',adprice:'Rp45.000',adbought:'✅ Tanpa Iklan'}),
+ vi:mk(EN,{sub:'Sắp xếp các quả bóng!',play:'▶ CHƠI',next:'TIẾP THEO ▶',retry:'↩ THỬ LẠI',win:'🎉 HOÀN THÀNH!',adfree:'🚫 Xóa quảng cáo',adprice:'$2.99',adbought:'✅ Không quảng cáo'}),
+ th:mk(EN,{sub:'จัดเรียงลูกบอลสี!',play:'▶ เล่น',next:'ถัดไป ▶',retry:'↩ ลองใหม่',win:'🎉 ผ่านด่าน!',adfree:'🚫 ลบโฆษณา',adprice:'$2.99',adbought:'✅ ไม่มีโฆษณา'})
+};
 const LANGLIST=[{c:'tr',l:'🇹🇷 Türkçe'},{c:'en',l:'🇬🇧 English'},{c:'az',l:'🇦🇿 Azərbaycan'},{c:'de',l:'🇩🇪 Deutsch'},{c:'es',l:'🇪🇸 Español'},{c:'fr',l:'🇫🇷 Français'},{c:'ar',l:'🇸🇦 العربية'},{c:'zh',l:'🇨🇳 中文'},{c:'ja',l:'🇯🇵 日本語'},{c:'ko',l:'🇰🇷 한국어'},{c:'hi',l:'🇮🇳 हिन्दी'},{c:'id',l:'🇮🇩 Indonesia'},{c:'vi',l:'🇻🇳 Tiếng Việt'},{c:'th',l:'🇹🇭 ไทย'}];
 let LANG='tr';
 function i18n(k,vars){let s=(LANGS[LANG]||EN)[k]||EN[k]||k;if(vars)for(const[a,b]of Object.entries(vars))s=s.replace('{'+a+'}',b);return s;}
@@ -74,18 +95,49 @@ const Audio={
  win(){if(this.muted||!this.ctx||this.ctx.state!=='running')return;[440,550,660,770,880,1100,1320].forEach((f,i)=>setTimeout(()=>this.tone(f,0.3,'sine',0.32),i*80));},
  daily(){if(this.muted||!this.ctx||this.ctx.state!=='running')return;[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,0.25,'sine',0.3),i*120));},
  fail(){this.tone(160,0.6,'sawtooth',0.22);},
+ hint(){this.tone(740,0.18,'sine',0.28);},
  startBgm(){if(this.muted||!this.ctx)return;if(this.ctx.state!=='running'){this.ctx.resume().then(()=>this._doBgm()).catch(()=>{});return;}this._doBgm();},
  _doBgm(){if(this.bgOscs.length>0)return;try{[130.81,164.81,196,246.94].forEach((f,i)=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.connect(g);g.connect(this.mg);o.type='sine';o.frequency.value=f;g.gain.value=0.016;o.start(this.ctx.currentTime+i*0.4);this.bgOscs.push(o);});}catch(e){}},
  stopBgm(){this.bgOscs.forEach(o=>{try{o.stop();}catch{}});this.bgOscs=[];},
  toggle(){this.muted=!this.muted;if(this.mg)this.mg.gain.value=this.muted?0:0.38;if(this.muted)this.stopBgm();else{this.unlock();this.startBgm();}return this.muted;}
 };
 
-const G={phase:'splash',level:1,score:0,coins:80,tubes:[],palette:[],selected:null,timerDur:BASE_TIMER,timerLeft:BASE_TIMER,timerHandle:null,reviveUsed:false,extraTubeUsed:false,history:[],particles:[],animT:0,W:0,H:0,safeTop:0,safeBottom:0,tubeY:0,afterInterstitial:null,canvas:null,ctx:null,rafId:null,lastTime:0};
+const G={phase:'splash',level:1,score:0,coins:50,tubes:[],palette:[],selected:null,timerDur:BASE_TIMER,timerLeft:BASE_TIMER,timerHandle:null,reviveUsed:false,extraTubeUsed:false,history:[],particles:[],animT:0,W:0,H:0,safeTop:0,safeBottom:0,tubeY:0,afterInterstitial:null,canvas:null,ctx:null,rafId:null,lastTime:0,hintTube:-1};
 
-function genLevel(lv){const{colors}=levelCfg(lv);const pal=PALETTE.slice(0,colors);const pool=[];for(let i=0;i<colors;i++)for(let j=0;j<BALLS;j++)pool.push(i);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}const tubes=[];for(let i=0;i<colors;i++)tubes.push({blocks:[...pool.slice(i*BALLS,(i+1)*BALLS)],x:0,y:0,w:0,h:0,idx:i});for(let i=0;i<EMPTY;i++)tubes.push({blocks:[],x:0,y:0,w:0,h:0,idx:colors+i});return{tubes,palette:pal};}
+function genLevel(lv){
+ const{colors}=levelCfg(lv);const pal=PALETTE.slice(0,colors);const pool=[];
+ for(let i=0;i<colors;i++)for(let j=0;j<BALLS;j++)pool.push(i);
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+ const tubes=[];
+ for(let i=0;i<colors;i++)tubes.push({blocks:[...pool.slice(i*BALLS,(i+1)*BALLS)],x:0,y:0,w:0,h:0,idx:i});
+ for(let i=0;i<EMPTY;i++)tubes.push({blocks:[],x:0,y:0,w:0,h:0,idx:colors+i});
+ return{tubes,palette:pal};
+}
 function isSolved(tubes){return tubes.every(tb=>tb.blocks.length===0||(tb.blocks.length===BALLS&&tb.blocks.every(b=>b===tb.blocks[0])));}
 function canMove(from,to){if(from.blocks.length===0||to.blocks.length>=BALLS)return false;if(to.blocks.length===0)return true;return to.blocks[to.blocks.length-1]===from.blocks[from.blocks.length-1];}
 function hasAnyMove(tubes){for(let i=0;i<tubes.length;i++)for(let j=0;j<tubes.length;j++)if(i!==j&&canMove(tubes[i],tubes[j]))return true;return false;}
+
+function findHint(){
+ // En iyi hamleyi bul: dolu tüpten aynı renge git
+ for(let i=0;i<G.tubes.length;i++){
+ const from=G.tubes[i];if(from.blocks.length===0)continue;
+ const top=from.blocks[from.blocks.length-1];
+ for(let j=0;j<G.tubes.length;j++){
+ if(i===j)continue;
+ const to=G.tubes[j];
+ if(canMove(from,to)&&to.blocks.length>0&&to.blocks[to.blocks.length-1]===top)return i;
+ }
+ }
+ // Yoksa boş tüpe git
+ for(let i=0;i<G.tubes.length;i++){
+ const from=G.tubes[i];if(from.blocks.length===0)continue;
+ for(let j=0;j<G.tubes.length;j++){
+ if(i===j)continue;
+ if(canMove(from,G.tubes[j]))return i;
+ }
+ }
+ return -1;
+}
 
 function layoutTubes(){
  const n=G.tubes.length,bot=G.safeBottom+16,avH=G.H-G.tubeY-bot;
@@ -93,7 +145,12 @@ function layoutTubes(){
  const tw=Math.round(Math.min(64,Math.max(36,(G.W-16)/perRow-8)));
  const rowH=rows===2?Math.round((avH-12)/2):avH;
  const th=Math.round(Math.min(rowH*0.94,tw*4.8));
- G.tubes.forEach((tb,i)=>{const row=rows===2?Math.floor(i/perRow):0;const col=rows===2?i%perRow:i;const countInRow=rows===2&&row===1?n-perRow:perRow;const total=countInRow*tw+(countInRow-1)*8;const ox=Math.round((G.W-total)/2);tb.w=tw;tb.h=th;tb.x=ox+col*(tw+8);tb.y=G.tubeY+row*(th+12)+Math.round((rowH-th)/2);});
+ G.tubes.forEach((tb,i)=>{
+ const row=rows===2?Math.floor(i/perRow):0;const col=rows===2?i%perRow:i;
+ const countInRow=rows===2&&row===1?n-perRow:perRow;
+ const total=countInRow*tw+(countInRow-1)*8;const ox=Math.round((G.W-total)/2);
+ tb.w=tw;tb.h=th;tb.x=ox+col*(tw+8);tb.y=G.tubeY+row*(th+12)+Math.round((rowH-th)/2);
+ });
 }
 
 function rRect(c,x,y,w,h,r){const[tl,tr,br,bl]=typeof r==='number'?[r,r,r,r]:r;c.beginPath();c.moveTo(x+tl,y);c.lineTo(x+w-tr,y);c.quadraticCurveTo(x+w,y,x+w,y+tr);c.lineTo(x+w,y+h-br);c.quadraticCurveTo(x+w,y+h,x+w-br,y+h);c.lineTo(x+bl,y+h);c.quadraticCurveTo(x,y+h,x,y+h-bl);c.lineTo(x,y+tl);c.quadraticCurveTo(x,y,x+tl,y);c.closePath();}
@@ -108,28 +165,39 @@ function drawBall(c,cx,cy,r,col){
  c.beginPath();c.arc(cx+r*0.2,cy+r*0.22,r*0.1,0,Math.PI*2);c.fillStyle='rgba(255,255,255,0.2)';c.fill();
 }
 
-function drawTube(c,tb,sel,done,animT){
+function drawTube(c,tb,sel,done,isHint,animT){
  const lift=sel?-12:0,R=13,{x,y,w,h}=tb;
  c.save();c.translate(0,lift);
- if(sel||done){c.shadowBlur=sel?28:18;c.shadowColor=sel?'rgba(0,229,255,0.9)':'rgba(68,255,136,0.8)';}
+ if(sel||done||isHint){
+ c.shadowBlur=isHint?32:sel?28:18;
+ c.shadowColor=isHint?'rgba(255,220,0,0.95)':sel?'rgba(0,229,255,0.9)':'rgba(68,255,136,0.8)';
+ }
  rRect(c,x,y,w,h,R);
  const bodyG=c.createLinearGradient(x,y,x+w,y);
- if(sel){bodyG.addColorStop(0,'rgba(0,40,80,0.92)');bodyG.addColorStop(1,'rgba(0,20,60,0.92)');}
+ if(isHint){bodyG.addColorStop(0,'rgba(60,45,0,0.92)');bodyG.addColorStop(1,'rgba(40,30,0,0.92)');}
+ else if(sel){bodyG.addColorStop(0,'rgba(0,40,80,0.92)');bodyG.addColorStop(1,'rgba(0,20,60,0.92)');}
  else if(done){bodyG.addColorStop(0,'rgba(0,50,30,0.85)');bodyG.addColorStop(1,'rgba(0,30,20,0.85)');}
  else{bodyG.addColorStop(0,'rgba(20,30,70,0.78)');bodyG.addColorStop(1,'rgba(8,15,50,0.78)');}
  c.fillStyle=bodyG;c.fill();c.shadowBlur=0;
  rRect(c,x,y,w,h,R);
  const borderG=c.createLinearGradient(x,y,x,y+h);
- if(sel){borderG.addColorStop(0,'rgba(0,229,255,1)');borderG.addColorStop(0.5,'rgba(0,150,255,0.7)');borderG.addColorStop(1,'rgba(0,229,255,0.5)');}
+ if(isHint){borderG.addColorStop(0,'rgba(255,220,0,1)');borderG.addColorStop(0.5,'rgba(255,180,0,0.7)');borderG.addColorStop(1,'rgba(255,220,0,0.5)');}
+ else if(sel){borderG.addColorStop(0,'rgba(0,229,255,1)');borderG.addColorStop(0.5,'rgba(0,150,255,0.7)');borderG.addColorStop(1,'rgba(0,229,255,0.5)');}
  else if(done){borderG.addColorStop(0,'rgba(68,255,136,0.95)');borderG.addColorStop(0.5,'rgba(34,197,94,0.6)');borderG.addColorStop(1,'rgba(68,255,136,0.4)');}
  else{borderG.addColorStop(0,'rgba(180,210,255,0.35)');borderG.addColorStop(1,'rgba(100,140,220,0.12)');}
- c.strokeStyle=borderG;c.lineWidth=sel?2.5:1.8;c.stroke();
+ c.strokeStyle=borderG;c.lineWidth=isHint?3:sel?2.5:1.8;c.stroke();
  const gl=c.createLinearGradient(x,y,x+w*0.4,y);gl.addColorStop(0,'rgba(255,255,255,0.22)');gl.addColorStop(1,'rgba(255,255,255,0)');
  rRect(c,x,y,w*0.4,h,[R,0,0,R]);c.fillStyle=gl;c.fill();
  c.save();rRect(c,x+2,y+2,w-4,h-4,R-2);c.clip();
  const bw=w-10,br2=bw/2,bs=Math.min(bw+3,(h-14)/BALLS);
  tb.blocks.forEach((ci,bi)=>{drawBall(c,x+w/2,y+h-9-bi*bs-br2,br2,G.palette[ci]||PALETTE[ci]||'#888');});
- c.restore();c.restore();
+ c.restore();
+ // İpucu tüpünde parlayan ok
+ if(isHint){
+ const pulse=Math.sin(animT*6)*0.4+0.6;
+ c.globalAlpha=pulse;c.font='bold '+(w*0.5)+'px sans-serif';c.fillStyle='#ffd700';c.textAlign='center';c.fillText('💡',x+w/2,y-4);c.globalAlpha=1;
+ }
+ c.restore();
 }
 
 function drawScene(){
@@ -141,7 +209,10 @@ function drawScene(){
  orbs.forEach(o=>{const r=o.r*(1+Math.sin(animT*0.4)*0.12);const g=c.createRadialGradient(o.x,o.y,0,o.x,o.y,r);g.addColorStop(0,o.col);g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.beginPath();c.arc(o.x,o.y,r,0,Math.PI*2);c.fill();});
  for(let i=0;i<8;i++){const px=W*((i*0.137+animT*0.015)%1);const py=H*((i*0.211+animT*0.008)%1);c.beginPath();c.arc(px,py,1.2,0,Math.PI*2);c.fillStyle='rgba(150,200,255,'+(0.08+Math.sin(animT+i)*0.05)+')';c.fill();}
  if(phase==='playing'||phase==='win'||phase==='over'){
- tubes.forEach((tb)=>{const done=tb.blocks.length===BALLS&&tb.blocks.every(b=>b===tb.blocks[0]);drawTube(c,tb,selected===tb.idx,done,animT);});
+ tubes.forEach((tb)=>{
+ const done=tb.blocks.length===BALLS&&tb.blocks.every(b=>b===tb.blocks[0]);
+ drawTube(c,tb,selected===tb.idx,done,G.hintTube===tb.idx,animT);
+ });
  G.particles=G.particles.filter(p=>p.life>0);
  G.particles.forEach(p=>{c.globalAlpha=p.life;c.beginPath();c.arc(p.x,p.y,p.r,0,Math.PI*2);c.fillStyle=p.col;c.fill();});
  c.globalAlpha=1;
@@ -150,65 +221,94 @@ function drawScene(){
 function spawnParticles(x,y,col){for(let i=0;i<16;i++){const a=i/16*Math.PI*2,s=2+Math.random()*5;G.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.5,r:3+Math.random()*5,col,life:1});}}
 function gameLoop(ts){G.rafId=requestAnimationFrame(gameLoop);const dt=Math.min((ts-G.lastTime)/1000,0.1);G.lastTime=ts;G.animT+=dt;G.particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.2;p.life=Math.max(0,p.life-0.025);});drawScene();}
 function floatScore(x,y,text){const d=document.createElement('div');d.className='score-float';d.textContent=text;d.style.left=x+'px';d.style.top=y+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1200);}
-function buildHUD(){
- const hud=document.getElementById('hud');
- const{colors,timer}=levelCfg(G.level);
- const sk=getStreak();
- const streakHtml=sk.count>1?'<div style="background:rgba(255,100,0,0.15);border:1px solid rgba(255,100,0,0.3);border-radius:22px;padding:5px 9px;color:#ff8844;font-size:12px;font-weight:700;">🔥'+sk.count+'</div>':'';
- hud.innerHTML='<div style="display:flex;align-items:center;gap:5px;padding:10px 10px 0;flex-wrap:wrap;pointer-events:auto;">'
- +'<div style="color:#4dd0ff;font-size:13px;font-weight:900;line-height:1.2;white-space:pre;flex-shrink:0;text-shadow:0 0 10px rgba(77,208,255,0.6);">Logic\nTube Pro</div>'
- +'<div id="hud-lp" style="background:rgba(100,70,0,0.5);border:1px solid rgba(200,150,0,0.4);border-radius:22px;padding:4px 9px;color:#fff;font-size:12px;font-weight:600;"><span style="font-size:9px;opacity:0.7;display:block;">'+i18n('lvl')+'</span><b style="font-size:14px">'+G.level+'</b><span style="font-size:8px;color:#88aaff;display:block;">'+colors+'🎨</span></div>'
- +'<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:22px;padding:4px 9px;color:#fff;font-size:12px;font-weight:600;">⭐<span id="hud-score">'+G.score+'</span></div>'
- +'<div style="background:rgba(245,194,0,0.12);border:1px solid rgba(245,194,0,0.3);border-radius:22px;padding:4px 9px;color:#ffd700;font-size:12px;font-weight:700;">🪙<span id="hud-coins">'+G.coins+'</span></div>'
- +streakHtml
- +'<button id="hud-mute" style="margin-left:auto;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;pointer-events:auto;flex-shrink:0;">🔊</button></div>'
- +'<div style="padding:4px 10px 0;">'
- +'<div style="font-size:9px;color:#88aaff;letter-spacing:1px;margin-bottom:2px;">🐆 '+i18n('sprint')+' · '+timer+'s</div>'
- +'<div style="position:relative;height:13px;border-radius:7px;background:rgba(255,255,255,0.05);border:1px solid rgba(120,80,255,0.22);overflow:hidden;">'
- +'<div id="hud-tf" style="height:100%;width:100%;border-radius:7px;background:linear-gradient(90deg,#7b2fff,#00e5ff);transition:width 0.5s linear,background 0.5s;"></div>'
- +'<div id="hud-ch" style="position:absolute;top:50%;transform:translateY(-50%);font-size:10px;transition:left 0.5s linear;left:88%;">🐆</div>'
- +'<div style="position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:10px;">🥕</div></div></div>'
- +'<div style="display:flex;gap:5px;padding:5px 10px 0;flex-wrap:wrap;pointer-events:auto;">'
- +'<button class="btn" style="background:rgba(192,57,43,0.8);font-size:11px;padding:6px 11px;min-height:34px;" id="hud-stop">'+i18n('stop')+'</button>'
- +'<button class="btn" style="background:rgba(142,68,173,0.8);font-size:11px;padding:6px 11px;min-height:34px;" id="hud-undo">'+i18n('undo')+'</button>'
- +'<button class="btn" style="background:rgba(41,128,185,0.8);font-size:11px;padding:6px 11px;min-height:34px;" id="hud-lb">'+i18n('lb')+'</button>'
- +'<button class="btn" style="background:rgba(39,174,96,0.8);font-size:11px;padding:6px 11px;min-height:34px;" id="hud-shop">🛒</button></div>';
- document.getElementById('hud-mute').onclick=()=>{document.getElementById('hud-mute').textContent=Audio.toggle()?'🔇':'🔊';};
- document.getElementById('hud-stop').onclick=()=>showGameOver('time');
- document.getElementById('hud-undo').onclick=()=>undoMove();
- document.getElementById('hud-lb').onclick=()=>showLeaderboard();
- document.getElementById('hud-shop').onclick=()=>showShop();
+function flash(msg){
+ const d=document.createElement('div');
+ d.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,15,40,0.96);border:1px solid rgba(77,208,255,0.4);border-radius:18px;color:#fff;font-size:15px;font-weight:700;padding:16px 28px;z-index:9999;pointer-events:none;text-align:center;max-width:280px;box-shadow:0 0 30px rgba(77,208,255,0.2);';
+ d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2000);
 }
-
-function updateHUD(){
- const sc=document.getElementById('hud-score'),co=document.getElementById('hud-coins'),tf=document.getElementById('hud-tf'),ch=document.getElementById('hud-ch'),lp=document.getElementById('hud-lp');
- if(sc)sc.textContent=G.score;if(co)co.textContent=G.coins;
- const pct=G.timerLeft/G.timerDur;
- if(tf){tf.style.width=(pct*100)+'%';tf.style.background=pct<0.25?'linear-gradient(90deg,#ff2244,#ff6600)':pct<0.5?'linear-gradient(90deg,#ff8800,#ffcc00)':'linear-gradient(90deg,#7b2fff,#00e5ff)';}
- if(ch)ch.style.left=Math.max(2,pct*85)+'%';
- const{colors}=levelCfg(G.level);
- if(lp)lp.innerHTML='<span style="font-size:9px;opacity:0.7;display:block;">'+i18n('lvl')+'</span><b style="font-size:14px">'+G.level+'</b><span style="font-size:8px;color:#88aaff;display:block;">'+colors+'🎨</span>';
-}
-
-function showOv(bg,html){const ov=document.getElementById('ov');ov.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:'+bg+';';ov.innerHTML=html;}
-function hideOv(){document.getElementById('ov').style.display='none';}
-function flash(msg){const d=document.createElement('div');d.style.cssText='position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;background:rgba(15,10,50,0.96);border:1px solid rgba(77,208,255,0.4);color:#fff;font-weight:700;font-size:14px;padding:11px 24px;border-radius:22px;backdrop-filter:blur(10px);';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
 
 function showDailyReward(){
  const info=checkDailyReward();if(!info)return false;
- const days=DAILY_REWARDS.map((r,i)=>{const past=i<info.day,cur=i===info.day;return'<div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:10px;background:'+(cur?'rgba(245,194,0,0.18)':past?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.04)')+';border:1px solid '+(cur?'rgba(245,194,0,0.5)':past?'rgba(34,197,94,0.3)':'rgba(255,255,255,0.08)')+';"><div style="font-size:9px;color:#88aaff;">Gün '+(i+1)+'</div><div style="font-size:14px;">'+(past?'✅':cur?'🎁':'🔒')+'</div><div style="font-size:10px;color:'+(cur?'#ffd700':'#6688aa')+';">🪙'+r+'</div></div>';}).join('');
- const sk=getStreak();
- showOv('rgba(5,8,25,0.97)','<div style="text-align:center;padding:24px 16px;max-width:340px;width:94%;"><div style="font-size:28px;margin-bottom:4px;">📅</div><div style="font-size:20px;font-weight:900;color:#ffd700;margin-bottom:4px;">'+i18n('daily')+'</div>'+(sk.count>1?'<div style="color:#ff8844;font-size:13px;margin-bottom:10px;">🔥 '+sk.count+' günlük seri!</div>':'<div style="margin-bottom:10px;"></div>')+'<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:18px;">'+days+'</div><div style="font-size:22px;font-weight:900;color:#ffd700;margin-bottom:6px;animation:pulse 1s infinite;">+'+info.coins+' 🪙</div><button id="dr-claim" class="btn btn-gold" style="font-size:15px;padding:13px 40px;width:100%;">'+i18n('collect')+'</button></div>');
- document.getElementById('dr-claim').onclick=()=>{const earned=claimDailyReward();G.coins+=earned;saveGame();Audio.daily();floatScore(G.W/2-40,G.H/2,'+'+earned+' 🪙');hideOv();setTimeout(()=>showSplash(),400);};
+ const days=DAILY_REWARDS.map((r,i)=>'<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 5px;border-radius:12px;background:'+(i===info.day?'rgba(245,194,0,0.18)':'rgba(255,255,255,0.04)')+';border:1px solid '+(i===info.day?'rgba(245,194,0,0.5)':'rgba(255,255,255,0.07)')+';min-width:36px;"><div style="font-size:9px;color:#88aaff;">'+(i+1)+'.gün</div><div style="font-size:13px;">🪙</div><div style="font-size:10px;font-weight:700;color:'+(i===info.day?'#ffd700':'#aaa')+';">'+r+'</div></div>').join('');
+ showOv('rgba(5,8,25,0.97)','<div style="text-align:center;padding:24px 18px;max-width:320px;width:94%;"><div style="font-size:24px;font-weight:900;color:#ffd700;margin-bottom:4px;">📅 Günlük Ödül</div><div style="color:#88aaff;font-size:12px;margin-bottom:16px;">Her gün giriş yap, bonus kazan!</div><div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">'+days+'</div><div style="font-size:32px;margin-bottom:6px;">🪙</div><div style="font-size:28px;font-weight:900;color:#ffd700;margin-bottom:4px;">+'+info.coins+' Altın</div><button id="dr-claim" class="btn btn-gold" style="font-size:16px;padding:14px 40px;width:100%;margin-top:8px;">🎁 Topla!</button></div>');
+ document.getElementById('dr-claim').onclick=()=>{const earned=claimDailyReward();G.coins+=earned;saveGame();Audio.daily();hideOv();floatScore(G.W/2-40,G.H/2,'🪙+'+earned);flash('🎉 +'+earned+' altın kazandın!');if(G.phase==='splash')showSplash();};
  return true;
 }
 
 function showShop(){
- const items=[{id:'coins200',icon:'🪙',name:'200 Jeton',desc:'Anlık yardım',price:'₺9,99',coins:200},{id:'coins600',icon:'💰',name:'600 Jeton',desc:'Süper değer',price:'₺24,99',coins:600,badge:'EN İYİ'},{id:'coins1500',icon:'💎',name:'1500 Jeton',desc:'Pro oyuncu',price:'₺49,99',coins:1500,badge:'%25 İNDİRİM'},{id:'adfree',icon:'🚫',name:'Reklamsız',desc:'Süresiz',price:i18n('adprice'),special:true}];
- const html=items.map(it=>'<div style="position:relative;display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);margin-bottom:8px;">'+(it.badge?'<div style="position:absolute;right:8px;top:-7px;background:#f5c200;color:#000;font-size:9px;font-weight:900;padding:2px 8px;border-radius:10px;">'+it.badge+'</div>':'')+'<div style="font-size:26px;">'+it.icon+'</div><div style="flex:1;"><div style="color:#fff;font-weight:700;font-size:13px;">'+it.name+'</div><div style="color:#88aaff;font-size:11px;">'+it.desc+'</div></div><button data-shop="'+it.id+'" class="btn" style="background:'+(it.special?'linear-gradient(135deg,#f5c200,#e67e22)':'linear-gradient(135deg,#4dd0ff,#7b2fff)')+';font-size:11px;padding:7px 12px;min-height:36px;">'+it.price+'</button></div>').join('');
- showOv('rgba(5,8,25,0.97)','<div style="text-align:center;padding:20px 16px;max-width:340px;width:94%;max-height:90vh;overflow-y:auto;"><div style="font-size:22px;font-weight:900;color:#4dd0ff;margin-bottom:4px;">🛒 Mağaza</div><div style="color:#88aaff;font-size:12px;margin-bottom:14px;">🪙 Bakiye: <b style="color:#ffd700;">'+G.coins+'</b> jeton</div>'+html+'<button id="shop-close" class="btn btn-ghost" style="margin-top:10px;width:100%;font-size:13px;">✕ Kapat</button></div>');
- document.getElementById('shop-close').onclick=()=>hideOv();
- document.querySelectorAll('[data-shop]').forEach(btn=>{btn.onclick=()=>{const id=btn.dataset.shop;if(id==='adfree'){if(isAdFree()){flash(i18n('adbought'));return;}if(confirm('Reklamları kaldır — '+i18n('adprice'))){setAdFree();flash('✅ Reklamsız aktif!');hideOv();}}else{const it=items.find(x=>x.id===id);if(it&&it.coins){if(confirm(it.name+' — '+it.price+'\n\nTest modu: ücretsiz eklendi.')){G.coins+=it.coins;saveGame();Audio.coin();floatScore(G.W/2-40,G.H/2,'+'+it.coins+' 🪙');hideOv();}}}};});
+ const af=isAdFree();
+ const packs=[
+ {id:'coins_small',label:'💎 Küçük Paket',amount:500,price:'₺19,99',desc:'500 Altın'},
+ {id:'coins_med',label:'💎💎 Orta Paket',amount:1500,price:'₺39,99',desc:'1.500 Altın + %50 Bonus'},
+ {id:'coins_big',label:'💎💎💎 Büyük Paket',amount:4000,price:'₺79,99',desc:'4.000 Altın + %166 Bonus'},
+ ];
+ const rows=packs.map(p=>'<button class="shop-pack" data-id="'+p.id+'" data-amt="'+p.amount+'" style="width:100%;background:rgba(77,208,255,0.07);border:1px solid rgba(77,208,255,0.22);border-radius:16px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="text-align:left;"><div style="color:#fff;font-weight:800;font-size:14px;">'+p.label+'</div><div style="color:#88aaff;font-size:11px;">'+p.desc+'</div></div><div style="color:#ffd700;font-weight:900;font-size:16px;">'+p.price+'</div></button>').join('');
+ showOv('rgba(5,8,25,0.97)','<div style="text-align:center;padding:22px 16px;max-width:320px;width:94%;max-height:90vh;overflow-y:auto;"><div style="font-size:22px;font-weight:900;color:#4dd0ff;margin-bottom:4px;">🛒 Altın Mağazası</div><div style="color:#88aaff;font-size:12px;margin-bottom:6px;">Mevcut: 🪙 '+G.coins+' Altın</div><div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:10px;margin-bottom:14px;text-align:left;font-size:11px;color:#88aaff;"><b style="color:#fff;">Altın ile neler yapabilirsin?</b><br>↩ Geri Al: 100 · 💡 İpucu: 150<br>⏰ +40 Saniye: 200 · 🧪 Ekstra Tüp: 250<br>⏭ Bölüm Atla: 400</div>'+rows+(af?'':'<button id="sh-adf" style="width:100%;background:rgba(255,200,0,0.07);border:1px solid rgba(255,200,0,0.22);border-radius:16px;padding:13px 16px;cursor:pointer;color:#ffcc00;font-weight:800;font-size:14px;margin-bottom:8px;">🚫 Reklamları Kaldır — '+i18n('adprice')+'</button>')+'<button id="sh-close" class="btn btn-ghost" style="font-size:13px;padding:10px 24px;min-height:44px;width:100%;margin-top:4px;">✕ Kapat</button></div>');
+ document.querySelectorAll('.shop-pack').forEach(btn=>{btn.onclick=()=>{const amt=parseInt(btn.dataset.amt);if(confirm(btn.querySelector('div>div').textContent+'\n\nSatın almak istiyor musunuz?')){G.coins+=amt;saveGame();Audio.coin();flash('🎉 +'+amt+' altın eklendi!');floatScore(G.W/2-40,G.H/2,'🪙+'+amt);hideOv();if(G.phase==='splash')showSplash();}}; });
+ if(!af){const adfBtn=document.getElementById('sh-adf');if(adfBtn)adfBtn.onclick=()=>{if(confirm(i18n('adfree')+' — '+i18n('adprice')+'\n\nOnaylıyor musunuz?')){setAdFree();flash(i18n('adbought'));hideOv();if(G.phase==='splash')showSplash();}};}
+ document.getElementById('sh-close').onclick=()=>{hideOv();if(G.phase==='splash')showSplash();};
+}
+
+function buildHUD(){
+ const sk=getStreak();
+ document.getElementById('hud').innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px 4px;background:rgba(5,8,25,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(77,208,255,0.1);">'
+ +'<div style="display:flex;flex-direction:column;"><span style="font-size:10px;color:#3a5570;">'+i18n('lvl')+'</span><span style="font-size:17px;font-weight:900;color:#fff;line-height:1;">'+G.level+'</span></div>'
+ +'<div style="display:flex;flex-direction:column;align-items:center;"><span style="font-size:10px;color:#3a5570;">Skor</span><span style="font-size:15px;font-weight:800;color:#fff;line-height:1;" id="hud-score">'+G.score+'</span></div>'
+ +'<div style="display:flex;flex-direction:column;align-items:center;"><span style="font-size:10px;color:#3a5570;">🪙 Altın</span><span style="font-size:15px;font-weight:800;color:#ffd700;line-height:1;" id="hud-coins">'+G.coins+'</span></div>'
+ +(sk.count>1?'<div style="display:flex;flex-direction:column;align-items:center;"><span style="font-size:10px;color:#ff8844;">🔥 Seri</span><span style="font-size:15px;font-weight:800;color:#ff8844;line-height:1;">'+sk.count+'</span></div>':'')
+ +'<div style="display:flex;gap:5px;align-items:center;">'
+ +'<button onclick="doUndo()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:11px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">↩<br><span style="font-size:9px;color:#ffd700;">100🪙</span></button>'
+ +'<button onclick="doHint()" style="background:rgba(255,220,0,0.08);border:1px solid rgba(255,220,0,0.25);border-radius:10px;color:#ffd700;font-size:11px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">💡<br><span style="font-size:9px;color:#ffd700;">150🪙</span></button>'
+ +'<button onclick="doSkip()" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;color:#22c55e;font-size:11px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">⏭<br><span style="font-size:9px;color:#22c55e;">400🪙</span></button>'
++'<button onclick="showLeaderboard()" style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:10px;color:#ffd700;font-size:14px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">🏆</button>'
++'<button onclick="showShop()" style="background:rgba(77,208,255,0.08);border:1px solid rgba(77,208,255,0.25);border-radius:10px;color:#4dd0ff;font-size:14px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">🛒</button>'
++'<button onclick="doPause()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#aaa;font-size:14px;font-weight:700;padding:5px 8px;cursor:pointer;min-height:34px;touch-action:manipulation;">⏸</button>'
++'</div></div>'
+ +'<div style="padding:5px 10px 6px;background:rgba(3,5,18,0.7);">'
+ +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#ff4466;white-space:nowrap;">🐆 '+i18n('sprint')+'</span>'
+ +'<div style="flex:1;height:16px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);position:relative;">'
+ +'<div id="hud-bar" style="height:100%;background:linear-gradient(90deg,#ff4466,#ff8800);border-radius:8px;transition:width 0.9s linear;width:100%;"></div>'
+ +'<span id="hud-tsec" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;font-weight:700;color:#fff;pointer-events:none;">'+G.timerLeft+'s</span></div>'
+ +'<span style="font-size:14px;">🥕</span></div></div>';
+}
+
+function updateHUD(){
+ const sc=document.getElementById('hud-score');if(sc)sc.textContent=G.score;
+ const co=document.getElementById('hud-coins');if(co)co.textContent=G.coins;
+ const bar=document.getElementById('hud-bar');const tsec=document.getElementById('hud-tsec');
+ if(bar){const pct=Math.max(0,G.timerLeft/G.timerDur*100);bar.style.width=pct+'%';bar.style.background=G.timerLeft<=10?'linear-gradient(90deg,#ff2244,#ff4400)':'linear-gradient(90deg,#ff4466,#ff8800)';}
+ if(tsec)tsec.textContent=G.timerLeft+'s';
+}
+
+function showOv(bg,html){const ov=document.getElementById('ov');ov.style.background=bg;ov.innerHTML=html;ov.style.display='flex';}
+function hideOv(){document.getElementById('ov').style.display='none';}
+
+function doUndo(){
+ if(G.phase!=='playing')return;
+ if(!G.history.length){flash('Geri alınacak hamle yok!');return;}
+ if(G.coins<COST_UNDO){flash('Yetersiz altın! ('+COST_UNDO+'🪙 gerekli)');return;}
+ G.coins-=COST_UNDO;saveGame();undoMove();Audio.pickup();
+ floatScore(G.W/2-30,G.H/3,'-'+COST_UNDO+'🪙');updateHUD();
+}
+
+function doHint(){
+ if(G.phase!=='playing')return;
+ if(G.coins<COST_HINT){flash('Yetersiz altın! ('+COST_HINT+'🪙 gerekli)');return;}
+ const idx=findHint();
+ if(idx===-1){flash('Hamle bulunamadı!');return;}
+ G.coins-=COST_HINT;saveGame();G.hintTube=idx;Audio.hint();
+ floatScore(G.W/2-30,G.H/3,'-'+COST_HINT+'🪙');updateHUD();
+ flash(i18n('hintUsed'));
+ setTimeout(()=>{G.hintTube=-1;},3000);
+}
+
+function doSkip(){
+ if(G.phase!=='playing')return;
+ if(G.coins<COST_SKIP){flash('Yetersiz altın! ('+COST_SKIP+'🪙 gerekli)');return;}
+ if(!confirm('400 altın karşılığı bu bölümü atlamak istiyor musunuz?'))return;
+ G.coins-=COST_SKIP;G.level++;saveGame();Audio.win();
+ floatScore(G.W/2-40,G.H/3,'⏭ -'+COST_SKIP+'🪙');
+ setTimeout(()=>maybeInterstitial(()=>startLevel()),400);
 }
 function showSplash(){
  G.phase='splash';stopTimer();document.getElementById('hud').style.display='none';
@@ -229,15 +329,17 @@ function showSplash(){
  +'<button id="sp-new" class="btn '+(hp?'btn-ghost':'btn-primary')+'" style="font-size:'+(hp?'13':'15')+'px;">'+i18n('newgame')+'</button></div>'
  +'<div style="display:flex;gap:8px;margin-bottom:10px;">'
  +'<button id="sp-daily" style="flex:1;background:rgba(245,194,0,0.1);border:1px solid rgba(245,194,0,0.3);border-radius:16px;color:#ffd700;font-size:12px;font-weight:700;padding:8px;cursor:pointer;">📅 '+i18n('daily')+'</button>'
- +'<button id="sp-shop" style="flex:1;background:rgba(77,208,255,0.1);border:1px solid rgba(77,208,255,0.3);border-radius:16px;color:#4dd0ff;font-size:12px;font-weight:700;padding:8px;cursor:pointer;">🛒</button></div>'
+ +'<button id="sp-shop" style="flex:1;background:rgba(77,208,255,0.1);border:1px solid rgba(77,208,255,0.3);border-radius:16px;color:#4dd0ff;font-size:12px;font-weight:700;padding:8px;cursor:pointer;">🛒 Mağaza</button></div>'
+ +'<button id="sp-lb" style="background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-radius:22px;color:#ffd700;font-size:12px;font-weight:700;padding:8px 18px;cursor:pointer;width:100%;margin-bottom:8px;">🏆 Sıralama Tablosu</button>'
  +'<button id="sp-adf" style="background:'+(af?'rgba(68,255,136,0.1)':'rgba(255,200,0,0.07)')+';border:1px solid '+(af?'rgba(68,255,136,0.3)':'rgba(255,200,0,0.22)')+';border-radius:22px;color:'+(af?'#44ff88':'#ffcc00')+';font-size:12px;font-weight:700;padding:8px 18px;cursor:pointer;width:100%;">'+(af?i18n('adbought'):i18n('adfree')+' — '+i18n('adprice'))+'</button>'
  +'<div style="margin-top:8px;color:#1a2840;font-size:10px;">'+G.score+' puan · 🪙 '+G.coins+'</div></div>');
  document.getElementById('sp-lang').onchange=e=>{const c=e.target.value;if(LANGS[c]){LANG=c;try{localStorage.setItem('ltp_lang',c);}catch{}}};
  const sn=()=>{const v=document.getElementById('sp-name');if(v)setPlayerName(v.value);};
  if(hp)document.getElementById('sp-cont').onclick=()=>{sn();Audio.unlock();showMenu();};
- document.getElementById('sp-new').onclick=()=>{sn();Audio.unlock();G.level=1;G.score=0;G.coins=80;saveGame();showMenu();};
+ document.getElementById('sp-new').onclick=()=>{sn();Audio.unlock();G.level=1;G.score=0;G.coins=50;saveGame();showMenu();};
  document.getElementById('sp-daily').onclick=()=>{sn();if(!showDailyReward())flash('Bugün zaten aldın! Yarın gel 🎁');};
  document.getElementById('sp-shop').onclick=()=>{sn();showShop();};
+ document.getElementById('sp-lb').onclick=()=>{sn();showLeaderboard();};
  document.getElementById('sp-adf').onclick=()=>{if(isAdFree()){flash(i18n('adbought'));return;}if(confirm(i18n('adfree')+' — '+i18n('adprice')+'\n\nOnaylıyor musunuz?')){setAdFree();flash(i18n('adbought'));const b=document.getElementById('sp-adf');if(b){b.style.color='#44ff88';b.textContent=i18n('adbought');}}};
 }
 
@@ -271,19 +373,28 @@ function showWin(){
  const streakMult=getStreakBonus();
  const base=Math.ceil(G.timerLeft*2)+G.level*50;
  const bonus=Math.round(base*streakMult);
- G.score+=bonus;G.coins+=20+G.level*5;addLB(G.score,G.level);saveGame();Audio.win();
+ const coinsEarned=10+G.level;
+ G.score+=bonus;G.coins+=coinsEarned;addLB(G.score,G.level);saveGame();Audio.win();
  const streakTxt=streakMult>1?'<div style="color:#ff8844;font-size:12px;margin-bottom:4px;">🔥 Seri bonusu x'+streakMult+'!</div>':'';
- showOv('rgba(0,12,5,0.92)','<div style="text-align:center;padding:22px 18px;max-width:300px;width:92%;"><div style="font-size:clamp(18px,6vw,36px);font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,#ffcc00,#44ff88,#4dd0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'+i18n('win')+'</div>'+streakTxt+'<div style="color:#88ddaa;font-size:14px;margin:4px 0 18px;">+'+bonus+' puan · 🪙+'+(20+G.level*5)+'</div><button id="win-next" class="btn btn-green" style="font-size:15px;padding:14px 40px;width:100%;">'+i18n('next')+'</button></div>');
+ showOv('rgba(0,12,5,0.92)','<div style="text-align:center;padding:22px 18px;max-width:300px;width:92%;"><div style="font-size:clamp(18px,6vw,36px);font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,#ffcc00,#44ff88,#4dd0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'+i18n('win')+'</div>'+streakTxt+'<div style="color:#88ddaa;font-size:14px;margin:4px 0 18px;">+'+bonus+' puan · 🪙+'+coinsEarned+'</div><button id="win-next" class="btn btn-green" style="font-size:15px;padding:14px 40px;width:100%;">'+i18n('next')+'</button></div>');
  document.getElementById('win-next').onclick=()=>{G.level++;maybeInterstitial(()=>startLevel());};
 }
 
 function showGameOver(reason){
  if(G.phase==='over')return;G.phase='over';stopTimer();Audio.fail();
- const cr=!G.reviveUsed,hc=G.coins>=100;
- showOv('rgba(14,3,3,0.94)','<div style="text-align:center;padding:22px 18px;max-width:310px;width:92%;"><div style="font-size:clamp(16px,5vw,30px);font-weight:900;color:#ff4466;margin-bottom:6px;">'+i18n(reason==='time'?'timesup':'nomoves')+'</div><div style="color:#662233;font-size:12px;margin-bottom:14px;">Skor: '+G.score+' · Bölüm '+G.level+' · 🪙 '+G.coins+'</div>'+(cr?'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"><button id="rv-coins" class="btn" style="background:'+(hc?'linear-gradient(135deg,#f5a623,#e67e22)':'rgba(70,70,70,0.4)')+';font-size:12px;padding:10px;width:100%;min-height:44px;">🪙 100 Jeton → +40 Saniye'+(hc?'':' (Yetersiz)')+'</button><button id="rv-ad" class="btn btn-primary" style="font-size:12px;padding:10px;width:100%;min-height:44px;">'+i18n('watchad')+'</button><button id="rv-share" class="btn btn-green" style="font-size:12px;padding:10px;width:100%;min-height:44px;">'+i18n('share')+'</button></div>':'')+'<button id="rv-retry" class="btn btn-ghost" style="font-size:13px;padding:10px 22px;min-height:44px;width:100%;">'+i18n('retry')+'</button></div>');
+ const cr=!G.reviveUsed,hc=G.coins>=COST_TIME;
+ showOv('rgba(14,3,3,0.94)','<div style="text-align:center;padding:22px 18px;max-width:310px;width:92%;"><div style="font-size:clamp(16px,5vw,30px);font-weight:900;color:#ff4466;margin-bottom:6px;">'+i18n(reason==='time'?'timesup':'nomoves')+'</div><div style="color:#662233;font-size:12px;margin-bottom:14px;">Skor: '+G.score+' · Bölüm '+G.level+' · 🪙 '+G.coins+'</div>'
+ +(cr?'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">'
+ +'<button id="rv-coins" class="btn" style="background:'+(hc?'linear-gradient(135deg,#f5a623,#e67e22)':'rgba(60,60,60,0.4)')+';font-size:12px;padding:10px;width:100%;min-height:44px;">🪙 '+COST_TIME+' Altın → +40 Saniye'+(hc?'':' (Yetersiz)')+'</button>'
+ +'<button id="rv-tube" class="btn" style="background:rgba(77,208,255,0.12);border:1px solid rgba(77,208,255,0.3);font-size:12px;padding:10px;width:100%;min-height:44px;">🧪 '+COST_TUBE+' Altın → Ekstra Tüp</button>'
+ +'<button id="rv-ad" class="btn btn-primary" style="font-size:12px;padding:10px;width:100%;min-height:44px;">📺 Reklam İzle → Ekstra Tüp</button>'
+ +'<button id="rv-share" class="btn btn-green" style="font-size:12px;padding:10px;width:100%;min-height:44px;">'+i18n('share')+'</button>'
+ +'</div>':'')
+ +'<button id="rv-retry" class="btn btn-ghost" style="font-size:13px;padding:10px 22px;min-height:44px;width:100%;">'+i18n('retry')+'</button></div>');
  document.getElementById('rv-retry').onclick=()=>startLevel();
  if(cr){
- document.getElementById('rv-coins').onclick=()=>{if(G.coins>=100){G.coins-=100;G.reviveUsed=true;G.timerLeft=Math.min(G.timerLeft+40,G.timerDur+40);resumePlay();}else flash(i18n('noCoins'));};
+ document.getElementById('rv-coins').onclick=()=>{if(G.coins>=COST_TIME){G.coins-=COST_TIME;G.reviveUsed=true;G.timerLeft=Math.min(G.timerLeft+40,G.timerDur+40);saveGame();resumePlay();}else flash('Yetersiz altın! ('+COST_TIME+'🪙 gerekli)');};
+ document.getElementById('rv-tube').onclick=()=>{if(G.coins>=COST_TUBE){G.coins-=COST_TUBE;G.reviveUsed=true;saveGame();addExtraTube();resumePlay();}else flash('Yetersiz altın! ('+COST_TUBE+'🪙 gerekli)');};
  document.getElementById('rv-ad').onclick=()=>{flash('📺 Reklam izleniyor…');setTimeout(()=>{addExtraTube();G.reviveUsed=true;resumePlay();},1500);};
  document.getElementById('rv-share').onclick=()=>{if(navigator.share){navigator.share({title:'Logic Tube Pro',text:'Bu bulmacayı çözebilir misin? 🎮',url:location.href}).then(()=>{addExtraTube();G.reviveUsed=true;resumePlay();}).catch(()=>{addExtraTube();G.reviveUsed=true;resumePlay();});}else{try{navigator.clipboard.writeText(location.href);}catch{}flash('🔗 Link kopyalandı!');setTimeout(()=>{addExtraTube();G.reviveUsed=true;resumePlay();},800);}};
  }
@@ -295,10 +406,10 @@ function showLeaderboard(){
  const lb=getLB().slice(0,10),md=['🥇','🥈','🥉'];
  const rows=lb.length===0?'<div style="color:#223344;font-size:12px;padding:12px;">Henüz sıralama yok.</div>':lb.map((e,i)=>'<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,0.04);margin-bottom:4px;"><span style="font-size:15px;width:22px;text-align:center;">'+(md[i]||(i+1)+'.')+'</span><span style="flex:1;color:#cce;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+e.name+'</span><span style="color:#ffd700;font-size:12px;font-weight:700;">'+e.score.toLocaleString()+'</span><span style="color:#88aaff;font-size:10px;">Lv'+e.level+'</span></div>').join('');
  showOv('rgba(5,8,25,0.97)','<div style="text-align:center;padding:20px 16px;max-width:320px;width:94%;max-height:90vh;overflow-y:auto;"><div style="font-size:22px;font-weight:900;color:#ffd700;margin-bottom:12px;">🏆 '+i18n('lb')+'</div>'+rows+'<button id="lb-close" class="btn btn-ghost" style="margin-top:14px;font-size:13px;padding:10px 24px;min-height:44px;width:100%;">✕ Kapat</button></div>');
- document.getElementById('lb-close').onclick=()=>hideOv();
+ document.getElementById('lb-close').onclick=()=>{hideOv();if(G.phase==='splash'||G.phase==='menu')showSplash();};
 }
 function startLevel(){
- G.phase='playing';G.reviveUsed=false;G.extraTubeUsed=false;G.selected=null;G.history=[];G.particles=[];
+ G.phase='playing';G.reviveUsed=false;G.extraTubeUsed=false;G.selected=null;G.history=[];G.particles=[];G.hintTube=-1;
  const{tubes,palette}=genLevel(G.level);
  const{timer}=levelCfg(G.level);
  G.timerDur=timer;G.timerLeft=timer;G.palette=palette;
@@ -311,11 +422,11 @@ function doMove(fi,ti){
  const from=G.tubes[fi],to=G.tubes[ti],top=from.blocks[from.blocks.length-1];
  let count=0;
  while(from.blocks.length>0&&from.blocks[from.blocks.length-1]===top&&to.blocks.length<BALLS){to.blocks.push(from.blocks.pop());count++;}
- G.history.push({fi,ti,count});G.score+=10;Audio.place();G.selected=null;
+ G.history.push({fi,ti,count});G.score+=10;Audio.place();G.selected=null;G.hintTube=-1;
  const tx=to.x+to.w/2,ty=to.y+to.h/2;
  floatScore(tx-20,ty-20,'+10');
  if(to.blocks.length===BALLS&&to.blocks.every(b=>b===to.blocks[0])){
- Audio.tubeDone();spawnParticles(tx,ty,G.palette[top]||'#fff');
+ Audio.tubeDone();spawnParticles(tx,ty,G.palette[to.blocks[0]]||'#fff');
  floatScore(tx-30,ty-50,'✨+50');G.score+=50;
  }
  updateHUD();
@@ -349,8 +460,12 @@ function handleTap(cx,cy){
 
 function startTimer(){stopTimer();G.timerHandle=setInterval(()=>{if(G.phase!=='playing')return;G.timerLeft=Math.max(0,G.timerLeft-1);updateHUD();if(G.timerLeft<=10)Audio.tick();if(G.timerLeft===0)showGameOver('time');},1000);}
 function stopTimer(){if(G.timerHandle){clearInterval(G.timerHandle);G.timerHandle=null;}}
+
 function saveGame(){lsSet(SAVE_KEY,{level:G.level,score:G.score,coins:G.coins,lang:LANG});}
-function loadGame(){const d=lsGet(SAVE_KEY,null);if(d){G.level=d.level||1;G.score=d.score||0;G.coins=d.coins||80;if(d.lang&&LANGS[d.lang])LANG=d.lang;}}
+function loadGame(){
+ const d=lsGet(SAVE_KEY,null);
+ if(d){G.level=d.level||1;G.score=d.score||0;G.coins=d.coins!==undefined?d.coins:50;if(d.lang&&LANGS[d.lang])LANG=d.lang;}
+}
 
 function calcSafe(){
  const el=document.createElement('div');
