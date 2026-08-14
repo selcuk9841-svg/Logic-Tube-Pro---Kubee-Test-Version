@@ -425,6 +425,7 @@ function startLevel(){
 
 function doMove(fi,ti){
  const from=G.tubes[fi],to=G.tubes[ti],top=from.blocks[from.blocks.length-1];
+ if(from.blocks.length===BALLS&&from.blocks.every(b=>b===from.blocks[0])){G.selected=null;return;}
  let count=0;
  while(from.blocks.length>0&&from.blocks[from.blocks.length-1]===top&&to.blocks.length<BALLS){to.blocks.push(from.blocks.pop());count++;}
  G.history.push({fi,ti,count});G.score+=10;Audio.place();G.selected=null;G.hintTube=-1;
