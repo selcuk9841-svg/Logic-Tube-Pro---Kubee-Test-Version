@@ -74,7 +74,7 @@ function getPlayerName(){return lsGet(NAME_KEY,'Oyuncu');}
 function setPlayerName(n){lsSet(NAME_KEY,(n||'').trim().slice(0,18)||'Oyuncu');}
 function getLB(){return lsGet(LB_KEY,[]);}
 function addLB(score,level){const lb=getLB();lb.push({name:getPlayerName(),score,level,ts:Date.now()});lb.sort((a,b)=>b.score-a.score);lsSet(LB_KEY,lb.slice(0,50));}
-function levelCfg(lv){const tier=Math.min(3,Math.floor((lv-1)/5));return{colors:tier+3,timer:BASE_TIMER-tier*5};}
+function levelCfg(lv){if(lv<=5)return{colors:3,timer:45};if(lv<=10)return{colors:4,timer:40};if(lv<=15)return{colors:4,timer:35};if(lv<=20)return{colors:5,timer:30};if(lv<=25)return{colors:5,timer:25};if(lv<=30)return{colors:6,timer:22};return{colors:6,timer:18};}
 function todayStr(){return new Date().toISOString().slice(0,10);}
 function getDailyState(){return lsGet(DAILY_KEY,{lastDate:null,day:0});}
 function getStreak(){return lsGet(STREAK_KEY,{count:0,lastDate:null});}
