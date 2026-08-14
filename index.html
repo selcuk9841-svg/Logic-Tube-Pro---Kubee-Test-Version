@@ -371,7 +371,7 @@ function maybeInterstitial(cb){
 function showWin(){
  G.phase='win';stopTimer();
  const streakMult=getStreakBonus();
- const base=Math.ceil(G.timerLeft*2)+G.level*50;
+ const base=G.level*20;
  const bonus=Math.round(base*streakMult);
  const coinsEarned=10+G.level;
  G.score+=bonus;G.coins+=coinsEarned;addLB(G.score,G.level);saveGame();Audio.win();
