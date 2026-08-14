@@ -430,10 +430,8 @@ function doMove(fi,ti){
  while(from.blocks.length>0&&from.blocks[from.blocks.length-1]===top&&to.blocks.length<BALLS){to.blocks.push(from.blocks.pop());count++;}
  G.history.push({fi,ti,count});Audio.place();G.selected=null;G.hintTube=-1;
  const tx=to.x+to.w/2,ty=to.y+to.h/2;
- floatScore(tx-20,ty-20,'+10');
  if(to.blocks.length===BALLS&&to.blocks.every(b=>b===to.blocks[0])){
  Audio.tubeDone();spawnParticles(tx,ty,G.palette[to.blocks[0]]||'#fff');
- floatScore(tx-30,ty-50,'✨+50');G.score+=50;
  }
  updateHUD();
  if(isSolved(G.tubes)){setTimeout(()=>showWin(),500);return;}
