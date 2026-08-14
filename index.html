@@ -373,7 +373,7 @@ function showWin(){
  const streakMult=getStreakBonus();
  const base=G.level*20;
  const bonus=base;
- const coinsEarned=10+G.level;
+ const coinsEarned=5;
  G.score+=bonus;G.coins+=coinsEarned;addLB(G.score,G.level);saveGame();Audio.win();
  const streakTxt=streakMult>1?'<div style="color:#ff8844;font-size:12px;margin-bottom:4px;">🔥 Seri bonusu x'+streakMult+'!</div>':'';
  showOv('rgba(0,12,5,0.92)','<div style="text-align:center;padding:22px 18px;max-width:300px;width:92%;"><div style="font-size:clamp(18px,6vw,36px);font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,#ffcc00,#44ff88,#4dd0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'+i18n('win')+'</div>'+streakTxt+'<div style="color:#88ddaa;font-size:14px;margin:4px 0 18px;">+'+bonus+' puan · 🪙+'+coinsEarned+'</div><button id="win-next" class="btn btn-green" style="font-size:15px;padding:14px 40px;width:100%;">'+i18n('next')+'</button></div>');
