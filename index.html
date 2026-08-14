@@ -372,7 +372,7 @@ function showWin(){
  G.phase='win';stopTimer();
  const streakMult=getStreakBonus();
  const base=G.level*20;
- const bonus=Math.round(base*streakMult);
+ const bonus=base;
  const coinsEarned=10+G.level;
  G.score+=bonus;G.coins+=coinsEarned;addLB(G.score,G.level);saveGame();Audio.win();
  const streakTxt=streakMult>1?'<div style="color:#ff8844;font-size:12px;margin-bottom:4px;">🔥 Seri bonusu x'+streakMult+'!</div>':'';
