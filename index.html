@@ -428,7 +428,7 @@ function doMove(fi,ti){
  if(from.blocks.length===BALLS&&from.blocks.every(b=>b===from.blocks[0])){G.selected=null;return;}
  let count=0;
  while(from.blocks.length>0&&from.blocks[from.blocks.length-1]===top&&to.blocks.length<BALLS){to.blocks.push(from.blocks.pop());count++;}
- G.history.push({fi,ti,count});G.score+=10;Audio.place();G.selected=null;G.hintTube=-1;
+ G.history.push({fi,ti,count});Audio.place();G.selected=null;G.hintTube=-1;
  const tx=to.x+to.w/2,ty=to.y+to.h/2;
  floatScore(tx-20,ty-20,'+10');
  if(to.blocks.length===BALLS&&to.blocks.every(b=>b===to.blocks[0])){
