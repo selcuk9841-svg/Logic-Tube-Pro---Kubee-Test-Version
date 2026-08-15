@@ -435,7 +435,7 @@ function doMove(fi,ti){
  }
  updateHUD();
  if(isSolved(G.tubes)){setTimeout(()=>showWin(),500);return;}
- if(!hasAnyMove(G.tubes))setTimeout(()=>showGameOver('moves'),400);
+ if(!hasAnyMove(G.tubes))setTimeout(()=>showStuck(),400);
 }
 
 function undoMove(){
